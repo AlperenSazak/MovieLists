@@ -5,10 +5,9 @@ namespace Core.Entities
     public class MovieLike
     {
         public int Id { get; set; }
-        public bool IsLiked { get; set; } // true = beğendi, false = beğenmedi
+        public bool IsLiked { get; set; } 
         public DateTime CreatedAt { get; set; }
 
-        // Foreign Keys
         public int MovieId { get; set; }
         public Movie Movie { get; set; }
 

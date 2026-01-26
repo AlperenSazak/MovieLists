@@ -15,7 +15,6 @@ namespace MovieLists.Controllers
             _authService = authService;
         }
 
-        // POST: api/Auth/register
         [HttpPost("register")]
         public async Task<IActionResult> Register(CreateUserDto userDto)
         {
@@ -30,7 +29,6 @@ namespace MovieLists.Controllers
             }
         }
 
-        // POST: api/Auth/login
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginDto loginDto)
         {

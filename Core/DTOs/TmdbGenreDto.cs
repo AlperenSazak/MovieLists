@@ -3,7 +3,6 @@ using System.Text.Json.Serialization;
 
 namespace Core.DTOs
 {
-    // Genre DTO
     public class TmdbGenreDto
     {
         [JsonPropertyName("id")]
@@ -13,7 +12,6 @@ namespace Core.DTOs
         public string Name { get; set; }
     }
 
-    // Genres Response DTO
     public class TmdbGenresResultDto
     {
         [JsonPropertyName("genres")]

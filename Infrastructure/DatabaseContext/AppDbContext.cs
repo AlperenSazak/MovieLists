@@ -12,7 +12,6 @@ namespace Infrastructure.DatabaseContext
         public DbSet<User> Users { get; set; }
         public DbSet<Movie> Movies { get; set; }
 
-        // 🔥 YENİ DbSet'ler
         public DbSet<Comment> Comments { get; set; }
         public DbSet<MovieLike> MovieLikes { get; set; }
         public DbSet<WatchLater> WatchLaterMovies { get; set; }
@@ -21,7 +20,6 @@ namespace Infrastructure.DatabaseContext
         {
             base.OnModelCreating(modelBuilder);
 
-            // User Configuration
             modelBuilder.Entity<User>(entity =>
             {
                 entity.HasKey(e => e.Id);
@@ -32,7 +30,6 @@ namespace Infrastructure.DatabaseContext
                 entity.HasIndex(e => e.Username).IsUnique();
             });
 
-            // Movie Configuration
             modelBuilder.Entity<Movie>(entity =>
             {
                 entity.HasKey(e => e.Id);
@@ -44,7 +41,6 @@ namespace Infrastructure.DatabaseContext
                       .OnDelete(DeleteBehavior.Cascade);
             });
 
-            // 🔥 YENİ - Comment Configuration
             modelBuilder.Entity<Comment>(entity =>
             {
                 entity.HasKey(e => e.Id);
@@ -59,10 +55,9 @@ namespace Infrastructure.DatabaseContext
                 entity.HasOne(e => e.User)
                       .WithMany(u => u.Comments)
                       .HasForeignKey(e => e.UserId)
-                      .OnDelete(DeleteBehavior.NoAction); // Cascade conflict önlemek için
+                      .OnDelete(DeleteBehavior.NoAction); 
             });
 
-            // 🔥 YENİ - MovieLike Configuration
             modelBuilder.Entity<MovieLike>(entity =>
             {
                 entity.HasKey(e => e.Id);
@@ -76,13 +71,11 @@ namespace Infrastructure.DatabaseContext
                 entity.HasOne(e => e.User)
                       .WithMany(u => u.Likes)
                       .HasForeignKey(e => e.UserId)
-                      .OnDelete(DeleteBehavior.NoAction); // Cascade conflict önlemek için
+                      .OnDelete(DeleteBehavior.NoAction); 
 
-                // Bir kullanıcı bir filme sadece 1 kez beğeni/beğenmeme yapabilir
                 entity.HasIndex(e => new { e.UserId, e.MovieId }).IsUnique();
             });
 
-            // WatchLater Configuration
             modelBuilder.Entity<WatchLater>(entity =>
             {
                 entity.HasKey(e => e.Id);
@@ -94,7 +87,6 @@ namespace Infrastructure.DatabaseContext
                       .HasForeignKey(e => e.UserId)
                       .OnDelete(DeleteBehavior.Cascade);
 
-                // Bir kullanıcı aynı filmi birden fazla kez ekleyemesin
                 entity.HasIndex(e => new { e.UserId, e.TmdbId }).IsUnique();
             });
         }

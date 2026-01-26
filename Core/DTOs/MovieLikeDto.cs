@@ -15,13 +15,13 @@ namespace Core.DTOs
     public class CreateMovieLikeDto
     {
         public int MovieId { get; set; }
-        public bool IsLiked { get; set; } // true = beğendi, false = beğenmedi
+        public bool IsLiked { get; set; } 
     }
 
     public class MovieLikeStatsDto
     {
         public int TotalLikes { get; set; }
         public int TotalDislikes { get; set; }
-        public bool? UserLiked { get; set; } // null = beğenmemiş, true = beğendi, false = beğenmedi
+        public bool? UserLiked { get; set; } 
     }
 }

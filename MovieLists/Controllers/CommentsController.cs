@@ -20,7 +20,6 @@ namespace MovieLists.Controllers
             _context = context;
         }
 
-        // GET: api/Comments/movie/5
         [HttpGet("movie/{movieId}")]
         [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<CommentDto>>> GetMovieComments(int movieId)
@@ -44,7 +43,6 @@ namespace MovieLists.Controllers
             return Ok(comments);
         }
 
-        // POST: api/Comments
         [HttpPost]
         public async Task<ActionResult<CommentDto>> CreateComment(CreateCommentDto dto)
         {
@@ -79,7 +77,6 @@ namespace MovieLists.Controllers
             return CreatedAtAction(nameof(GetMovieComments), new { movieId = comment.MovieId }, commentDto);
         }
 
-        // PUT: api/Comments/5
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateComment(int id, UpdateCommentDto dto)
         {
@@ -100,7 +97,6 @@ namespace MovieLists.Controllers
             return NoContent();
         }
 
-        // DELETE: api/Comments/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteComment(int id)
         {

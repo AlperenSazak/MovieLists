@@ -25,19 +25,16 @@ namespace Infrastructure.Services
 
         public async Task<string> RegisterAsync(CreateUserDto userDto)
         {
-            // Email kontrolü
             if (await _context.Users.AnyAsync(u => u.Email == userDto.Email))
             {
                 throw new Exception("Bu email zaten kayıtlı!");
             }
 
-            // Username kontrolü
             if (await _context.Users.AnyAsync(u => u.Username == userDto.Username))
             {
                 throw new Exception("Bu kullanıcı adı zaten alınmış!");
             }
 
-            // Şimdilik basit hash (production'da BCrypt kullan!)
             var passwordHash = Convert.ToBase64String(Encoding.UTF8.GetBytes(userDto.Password));
 
             var user = new User
@@ -63,14 +60,12 @@ namespace Infrastructure.Services
                 throw new Exception("Email veya şifre hatalı!");
             }
 
-            // Şifre kontrolü
             var passwordHash = Convert.ToBase64String(Encoding.UTF8.GetBytes(password));
             if (user.PasswordHash != passwordHash)
             {
                 throw new Exception("Email veya şifre hatalı!");
             }
 
-            // LastLogin güncelle
             user.LastLoginAt = DateTime.UtcNow;
             await _context.SaveChangesAsync();
 

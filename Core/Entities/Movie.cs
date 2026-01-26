@@ -9,22 +9,21 @@ namespace Core.Entities
     public class Movie
     {
         public int Id { get; set; }
-        public int TmdbId { get; set; } // TMDB'den gelecek
+        public int TmdbId { get; set; } 
         public string Title { get; set; }
         public string? OriginalTitle { get; set; }
         public string? Overview { get; set; }
-        public string? PosterPath { get; set; } // Afiş URL
-        public string? BackdropPath { get; set; } // Arka plan
+        public string? PosterPath { get; set; } 
+        public string? BackdropPath { get; set; } 
         public DateTime? ReleaseDate { get; set; }
-        public double? VoteAverage { get; set; } // IMDB puanı gibi
-        public int? Runtime { get; set; } // Dakika
-        public DateTime WatchedDate { get; set; } // Ne zaman izlendi
-        public int? UserRating { get; set; } // Kullanıcının verdiği puan (1-10)
-        public string? UserNotes { get; set; } // Kullanıcı notu
+        public double? VoteAverage { get; set; } 
+        public int? Runtime { get; set; } 
+        public DateTime WatchedDate { get; set; } 
+        public int? UserRating { get; set; } 
+        public string? UserNotes { get; set; } 
         public string? Genres { get; set; }
         public DateTime CreatedAt { get; set; }
 
-        // Foreign Key
         public int UserId { get; set; }
         public User? User { get; set; }
 

@@ -5,11 +5,10 @@ namespace Core.Entities
     public class Comment
     {
         public int Id { get; set; }
-        public string Content { get; set; } // Yorum içeriği
+        public string Content { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
-        // Foreign Keys
         public int MovieId { get; set; }
         public Movie Movie { get; set; }
 

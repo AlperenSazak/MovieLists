@@ -20,7 +20,6 @@ namespace MovieLists.Controllers
             _context = context;
         }
 
-        // GET: api/MovieLikes/movie/5/stats
         [HttpGet("movie/{movieId}/stats")]
         [AllowAnonymous]
         public async Task<ActionResult<MovieLikeStatsDto>> GetMovieLikeStats(int movieId)
@@ -47,7 +46,6 @@ namespace MovieLists.Controllers
             return Ok(stats);
         }
 
-        // POST: api/MovieLikes
         [HttpPost]
         public async Task<ActionResult> ToggleLike(CreateMovieLikeDto dto)
         {
@@ -58,21 +56,18 @@ namespace MovieLists.Controllers
 
             if (existingLike != null)
             {
-                // Aynı beğeni/beğenmeme ise sil
                 if (existingLike.IsLiked == dto.IsLiked)
                 {
                     _context.MovieLikes.Remove(existingLike);
                 }
                 else
                 {
-                    // Farklı ise güncelle
                     existingLike.IsLiked = dto.IsLiked;
                     existingLike.CreatedAt = DateTime.UtcNow;
                 }
             }
             else
             {
-                // Yeni beğeni
                 var like = new MovieLike
                 {
                     MovieId = dto.MovieId,
@@ -88,7 +83,6 @@ namespace MovieLists.Controllers
             return Ok();
         }
 
-        // DELETE: api/MovieLikes/movie/5
         [HttpDelete("movie/{movieId}")]
         public async Task<IActionResult> RemoveLike(int movieId)
         {

@@ -20,7 +20,6 @@ namespace MovieLists.Controllers
             _context = context;
         }
 
-        // GET: api/WatchLater
         [HttpGet]
         public async Task<ActionResult<IEnumerable<WatchLaterDto>>> GetWatchLaterMovies()
         {
@@ -48,13 +47,11 @@ namespace MovieLists.Controllers
             return Ok(movies);
         }
 
-        // POST: api/WatchLater
         [HttpPost]
         public async Task<ActionResult<WatchLaterDto>> AddToWatchLater(CreateWatchLaterDto dto)
         {
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
-            // Zaten eklemiş mi kontrol et
             var exists = await _context.WatchLaterMovies
                 .AnyAsync(w => w.UserId == userId && w.TmdbId == dto.TmdbId);
 
@@ -98,7 +95,6 @@ namespace MovieLists.Controllers
             return CreatedAtAction(nameof(GetWatchLaterMovies), result);
         }
 
-        // DELETE: api/WatchLater/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteFromWatchLater(int id)
         {
@@ -117,7 +113,6 @@ namespace MovieLists.Controllers
             return NoContent();
         }
 
-        // DELETE: api/WatchLater/tmdb/550 (TMDB ID ile sil)
         [HttpDelete("tmdb/{tmdbId}")]
         public async Task<IActionResult> DeleteByTmdbId(int tmdbId)
         {
@@ -134,7 +129,6 @@ namespace MovieLists.Controllers
             return NoContent();
         }
 
-        // GET: api/WatchLater/check/550 (Film listede mi kontrol et)
         [HttpGet("check/{tmdbId}")]
         public async Task<ActionResult<bool>> CheckIfInWatchLater(int tmdbId)
         {

@@ -10,7 +10,7 @@ namespace Core.DTOs
         public DateTime? UpdatedAt { get; set; }
         public int MovieId { get; set; }
         public int UserId { get; set; }
-        public string Username { get; set; } // User'dan gelecek
+        public string Username { get; set; } 
     }
 
     public class CreateCommentDto

@@ -20,7 +20,6 @@ namespace MovieLists.Controllers
             _context = context;
         }
 
-        // GET: api/Users
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserDto>>> GetUsers()
         {
@@ -28,7 +27,6 @@ namespace MovieLists.Controllers
             return Ok(users.Select(u => u.ToDto()));
         }
 
-        // GET: api/Users/5
         [HttpGet("{id}")]
         public async Task<ActionResult<UserDto>> GetUser(int id)
         {
@@ -42,7 +40,6 @@ namespace MovieLists.Controllers
             return user.ToDto();
         }
 
-        // POST: api/Users
         [HttpPost]
         public async Task<ActionResult<UserDto>> PostUser(CreateUserDto dto)
         {
@@ -50,7 +47,7 @@ namespace MovieLists.Controllers
             {
                 Username = dto.Username,
                 Email = dto.Email,
-                PasswordHash = dto.Password, // Şimdilik basit, sonra hash'leyeceğiz
+                PasswordHash = dto.Password, 
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -60,7 +57,6 @@ namespace MovieLists.Controllers
             return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user.ToDto());
         }
 
-        // PUT: api/Users/favorite-movie/{tmdbId}
         [HttpPut("favorite-movie/{tmdbId}")]
         public async Task<IActionResult> SetFavoriteMovie(int tmdbId)
         {
@@ -78,7 +74,6 @@ namespace MovieLists.Controllers
             return Ok(new { message = "Favori film güncellendi!" });
         }
 
-        // GET: api/Users/profile
         [HttpGet("profile")]
         public async Task<ActionResult<UserDto>> GetProfile()
         {

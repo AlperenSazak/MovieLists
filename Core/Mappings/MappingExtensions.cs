@@ -5,7 +5,6 @@ namespace Core.Mappings
 {
     public static class MappingExtensions
     {
-        // Movie → MovieDto
         public static MovieDto ToDto(this Movie movie)
         {
             return new MovieDto
@@ -29,7 +28,6 @@ namespace Core.Mappings
             };
         }
 
-        // CreateMovieDto → Movie
         public static Movie ToEntity(this CreateMovieDto dto)
         {
             return new Movie
@@ -52,7 +50,6 @@ namespace Core.Mappings
             };
         }
 
-        // User → UserDto
         public static UserDto ToDto(this User user)
         {
             return new UserDto

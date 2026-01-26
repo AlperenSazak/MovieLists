@@ -14,7 +14,6 @@ namespace MovieLists.Controllers
             _tmdbService = tmdbService;
         }
 
-        // GET: api/Tmdb/search?query=inception
         [HttpGet("search")]
         public async Task<IActionResult> SearchMovies([FromQuery] string query)
         {
@@ -27,7 +26,6 @@ namespace MovieLists.Controllers
             return Ok(result);
         }
 
-        // GET: api/Tmdb/550
         [HttpGet("{tmdbId}")]
         public async Task<IActionResult> GetMovieDetails(int tmdbId)
         {
@@ -35,7 +33,6 @@ namespace MovieLists.Controllers
             return Ok(result);
         }
 
-        // GET: api/Tmdb/550/backdrops
         [HttpGet("{tmdbId}/backdrops")]
         public async Task<IActionResult> GetMovieBackdrops(int tmdbId)
         {
@@ -43,7 +40,6 @@ namespace MovieLists.Controllers
             return Ok(backdrops);
         }
 
-        // GET: api/Tmdb/popular?page=1
         [HttpGet("popular")]
         public async Task<IActionResult> GetPopularMovies([FromQuery] int page = 1)
         {
@@ -51,7 +47,6 @@ namespace MovieLists.Controllers
             return Ok(result);
         }
 
-        // GET: api/Tmdb/genres
         [HttpGet("genres")]
         public async Task<IActionResult> GetGenres()
         {
@@ -59,13 +54,11 @@ namespace MovieLists.Controllers
             return Ok(result);
         }
 
-        // GET: api/Tmdb/discover?category=popular&page=1
         [HttpGet("discover")]
         public async Task<IActionResult> DiscoverMovies([FromQuery] string category = "popular", [FromQuery] int page = 1)
         {
             try
             {
-                // category: popular, top_rated, now_playing
                 var result = await _tmdbService.DiscoverMoviesAsync(category, page);
                 return Ok(result);
             }
