@@ -11,10 +11,10 @@ namespace Infrastructure.DatabaseContext
 
         public DbSet<User> Users { get; set; }
         public DbSet<Movie> Movies { get; set; }
-
         public DbSet<Comment> Comments { get; set; }
         public DbSet<MovieLike> MovieLikes { get; set; }
         public DbSet<WatchLater> WatchLaterMovies { get; set; }
+        public DbSet<CommentLike> CommentLikes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -55,7 +55,7 @@ namespace Infrastructure.DatabaseContext
                 entity.HasOne(e => e.User)
                       .WithMany(u => u.Comments)
                       .HasForeignKey(e => e.UserId)
-                      .OnDelete(DeleteBehavior.NoAction); 
+                      .OnDelete(DeleteBehavior.NoAction);
             });
 
             modelBuilder.Entity<MovieLike>(entity =>
@@ -71,7 +71,7 @@ namespace Infrastructure.DatabaseContext
                 entity.HasOne(e => e.User)
                       .WithMany(u => u.Likes)
                       .HasForeignKey(e => e.UserId)
-                      .OnDelete(DeleteBehavior.NoAction); 
+                      .OnDelete(DeleteBehavior.NoAction);
 
                 entity.HasIndex(e => new { e.UserId, e.MovieId }).IsUnique();
             });
@@ -89,6 +89,10 @@ namespace Infrastructure.DatabaseContext
 
                 entity.HasIndex(e => new { e.UserId, e.TmdbId }).IsUnique();
             });
+
+            modelBuilder.Entity<CommentLike>()
+            .HasIndex(cl => new { cl.CommentId, cl.UserId })
+            .IsUnique();
         }
     }
 }

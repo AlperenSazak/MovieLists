@@ -1,12 +1,13 @@
 ﻿using Core.DTOs;
 using Core.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MovieLists.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AuthController : ControllerBase
+    public class AuthController : Controller
     {
         private readonly IAuthService _authService;
 
@@ -41,6 +42,21 @@ namespace MovieLists.Controllers
             {
                 return BadRequest(new { message = ex.Message });
             }
+        }
+
+        [HttpGet]
+        [Route("~/Account/Login")]
+        [AllowAnonymous]
+        public IActionResult LoginView()
+        {
+            return View("~/Views/Account/Login.cshtml");
+        }
+
+        [HttpGet]
+        [Route("~/Account/Profile")]
+        public IActionResult ProfileView()
+        {
+            return View("~/Views/Account/Profile.cshtml");
         }
     }
 }

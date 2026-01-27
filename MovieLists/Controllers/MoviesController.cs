@@ -11,7 +11,7 @@ namespace MovieLists.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class MoviesController : ControllerBase
+    public class MoviesController : Controller
     {
         private readonly AppDbContext _context;
 
@@ -21,6 +21,7 @@ namespace MovieLists.Controllers
         }
 
         [HttpGet]
+        [Route("~/api/Movies")]
         public async Task<ActionResult<IEnumerable<MovieDto>>> GetMovies()
         {
             var movies = await _context.Movies
@@ -31,6 +32,7 @@ namespace MovieLists.Controllers
         }
 
         [HttpGet("{id}")]
+        [Route("~/api/Movies/{id}")]
         public async Task<ActionResult<MovieDto>> GetMovie(int id)
         {
             var movie = await _context.Movies

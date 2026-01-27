@@ -20,13 +20,20 @@ namespace MovieLists.Controllers
             _context = context;
         }
 
-        [HttpGet("movie/{movieId}")]
+        [HttpGet("movie/{tmdbId}")]
         [AllowAnonymous]
-        public async Task<ActionResult<IEnumerable<CommentDto>>> GetMovieComments(int movieId)
+        public async Task<ActionResult<IEnumerable<CommentDto>>> GetMovieComments(int tmdbId)
         {
+            var movie = await _context.Movies.FirstOrDefaultAsync(m => m.TmdbId == tmdbId);
+
+            if (movie == null)
+            {
+                return Ok(new List<CommentDto>()); 
+            }
+
             var comments = await _context.Comments
                 .Include(c => c.User)
-                .Where(c => c.MovieId == movieId)
+                .Where(c => c.MovieId == movie.Id)
                 .OrderByDescending(c => c.CreatedAt)
                 .Select(c => new CommentDto
                 {
@@ -48,12 +55,19 @@ namespace MovieLists.Controllers
         {
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
+            var movie = await _context.Movies.FirstOrDefaultAsync(m => m.TmdbId == dto.MovieId);
+
+            if (movie == null)
+            {
+                return BadRequest("Bu filme yorum yapabilmek için önce kütüphanenize eklemelisiniz.");
+            }
+
             var comment = new Comment
             {
                 Content = dto.Content,
-                MovieId = dto.MovieId,
+                MovieId = movie.Id,
                 UserId = userId,
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.Now
             };
 
             _context.Comments.Add(comment);
@@ -74,7 +88,7 @@ namespace MovieLists.Controllers
                 Username = createdComment.User.Username
             };
 
-            return CreatedAtAction(nameof(GetMovieComments), new { movieId = comment.MovieId }, commentDto);
+            return CreatedAtAction(nameof(GetMovieComments), new { tmdbId = movie.TmdbId }, commentDto);
         }
 
         [HttpPut("{id}")]

@@ -1,0 +1,841 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MovieLists - Profil</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Dark Mode (Default) */
+            --bg-primary: #0a0a0a;
+            --bg-secondary: rgba(0, 0, 0, 0.6);
+            --bg-card: rgba(0, 0, 0, 0.7);
+            --text-primary: #ffffff;
+            --text-secondary: #888888;
+            --text-tertiary: #666666;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --overlay-gradient: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.6));
+        }
+
+        [data-theme="light"] {
+            /* Light Mode */
+            --bg-primary: #f5f5f5;
+            --bg-secondary: rgba(255, 255, 255, 0.9);
+            --bg-card: rgba(255, 255, 255, 0.95);
+            --text-primary: #1a1a1a;
+            --text-secondary: #555555;
+            --text-tertiary: #888888;
+            --border-color: rgba(0, 0, 0, 0.1);
+            --overlay-gradient: linear-gradient(to bottom, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.9));
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-primary);
+            min-height: 100vh;
+            color: var(--text-primary);
+            position: relative;
+            overflow-x: hidden;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        #backdrop-slideshow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        .backdrop-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transition: opacity 2s ease-in-out;
+            filter: blur(2px) brightness(0.7);
+        }
+
+            .backdrop-image.active {
+                opacity: 1;
+            }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--overlay-gradient);
+            z-index: 1;
+            transition: background 0.3s ease;
+        }
+
+        .container {
+            position: relative;
+            z-index: 2;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: var(--bg-secondary);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .logo {
+            font-size: 2em;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .theme-toggle {
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border-color);
+            border-radius: 50%;
+            color: var(--text-primary);
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+            .theme-toggle:hover {
+                background: rgba(255, 255, 255, 0.2);
+                transform: scale(1.1);
+            }
+
+        .nav-btn {
+            padding: 12px 25px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border-color);
+            border-radius: 50px;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+            .nav-btn:hover {
+                background: rgba(255, 255, 255, 0.2);
+                transform: translateY(-2px);
+            }
+
+        .profile-section {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .profile-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 25px;
+            padding: 40px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .profile-avatar {
+            width: 150px;
+            height: 150px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4em;
+            margin: 0 auto 20px;
+        }
+
+        .profile-name {
+            font-size: 2em;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--text-primary);
+        }
+
+        .profile-email {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .profile-date {
+            font-size: 0.9em;
+            color: var(--text-tertiary);
+        }
+
+        .stats-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 25px;
+            padding: 40px;
+            transition: all 0.3s ease;
+        }
+
+        .stats-title {
+            font-size: 1.5em;
+            font-weight: 700;
+            margin-bottom: 30px;
+            color: var(--text-primary);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .stat-value {
+            font-size: 2.5em;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9em;
+        }
+
+        .favorite-section {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 25px;
+            padding: 40px;
+            margin-bottom: 40px;
+            transition: all 0.3s ease;
+        }
+
+        .section-title {
+            font-size: 1.8em;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+        }
+
+        .favorite-movie {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .favorite-poster {
+            width: 200px;
+            height: 300px;
+            border-radius: 15px;
+            object-fit: cover;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .favorite-info h3 {
+            font-size: 2em;
+            margin-bottom: 15px;
+            color: var(--text-primary);
+        }
+
+        .favorite-info p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .change-favorite-btn {
+            padding: 15px 35px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 50px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+            .change-favorite-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+            }
+
+        .no-favorite {
+            text-align: center;
+            padding: 60px;
+            color: var(--text-tertiary);
+        }
+
+            .no-favorite h3 {
+                color: var(--text-primary);
+                margin-bottom: 15px;
+            }
+
+        .search-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+            .search-modal.active {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 20px;
+            }
+
+        .search-modal-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 25px;
+            max-width: 800px;
+            width: 100%;
+            padding: 40px;
+            max-height: 80vh;
+            overflow-y: auto;
+            transition: all 0.3s ease;
+        }
+
+        .search-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+            .search-modal-header h2 {
+                color: var(--text-primary);
+            }
+
+        .close-modal {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 24px;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+            .close-modal:hover {
+                background: rgba(255, 255, 255, 0.2);
+            }
+
+        .search-input {
+            width: 100%;
+            padding: 15px 25px;
+            border: 1px solid var(--border-color);
+            border-radius: 50px;
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+            .search-input::placeholder {
+                color: var(--text-tertiary);
+            }
+
+            .search-input:focus {
+                outline: none;
+                border-color: #667eea;
+            }
+
+        .search-results {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 20px;
+        }
+
+        .search-result-item {
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+            .search-result-item:hover {
+                transform: scale(1.05);
+            }
+
+        .search-result-poster {
+            width: 100%;
+            height: 180px;
+            border-radius: 10px;
+            object-fit: cover;
+            margin-bottom: 10px;
+        }
+
+        .search-result-title {
+            font-size: 0.85em;
+            text-align: center;
+            color: var(--text-primary);
+        }
+
+        @@media (max-width: 768px) {
+            .profile-section {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .favorite-movie {
+                flex-direction: column;
+            }
+
+            .nav-buttons {
+                flex-wrap: wrap;
+            }
+        }
+
+        /* Logout Modal */
+        .logout-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+        }
+
+            .logout-modal.active {
+                display: flex;
+            }
+
+        .logout-modal-content {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.95) 0%, rgba(118, 75, 162, 0.95) 100%);
+            border-radius: 25px;
+            padding: 50px;
+            max-width: 450px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @@keyframes modalSlideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .logout-modal-icon {
+            font-size: 5em;
+            margin-bottom: 20px;
+        }
+
+        .logout-modal h2 {
+            font-size: 2em;
+            margin-bottom: 15px;
+            color: white;
+        }
+
+        .logout-modal p {
+            font-size: 1.2em;
+            margin-bottom: 35px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .logout-modal-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .modal-btn {
+            padding: 15px 40px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .modal-btn-confirm {
+            background: rgba(220, 53, 69, 0.9);
+            color: white;
+        }
+
+            .modal-btn-confirm:hover {
+                background: rgba(220, 53, 69, 1);
+                transform: translateY(-2px);
+            }
+
+        .modal-btn-cancel {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+            .modal-btn-cancel:hover {
+                background: rgba(255, 255, 255, 0.3);
+                transform: translateY(-2px);
+            }
+    </style>
+</head>
+
+<body>
+    <div id="backdrop-slideshow"></div>
+    <div class="overlay"></div>
+
+    <div class="container">
+        <header>
+            <div class="logo">🎬 MovieLists</div>
+            <div class="nav-buttons">
+                <button class="theme-toggle" onclick="toggleTheme()" title="Tema Değiştir">
+                    <span id="themeIcon">🌙</span>
+                </button>
+                <a href="/" class="nav-btn">🏠 Ana Sayfa</a>
+                <button class="nav-btn" onclick="logout()">🚪 Çıkış</button>
+            </div>
+        </header>
+
+        <div class="profile-section">
+            <div class="profile-card">
+                <div class="profile-avatar">👤</div>
+                <div class="profile-name" id="profileUsername">Kullanıcı</div>
+                <div class="profile-email" id="profileEmail">email@example.com</div>
+                <div class="profile-date">Üye olma: <span id="profileDate">-</span></div>
+            </div>
+
+            <div class="stats-card">
+                <div class="stats-title">📊 İstatistikler</div>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value" id="totalMovies">0</div>
+                        <div class="stat-label">Toplam Film</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="avgRating">0.0</div>
+                        <div class="stat-label">Ortalama Puan</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="thisMonth">0</div>
+                        <div class="stat-label">Bu Ay</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="favorite-section">
+            <div class="section-title">⭐ En Sevdiğim Film</div>
+            <div id="favoriteMovieContent"></div>
+        </div>
+    </div>
+
+    <div id="searchModal" class="search-modal">
+        <div class="search-modal-content">
+            <div class="search-modal-header">
+                <h2>🔍 Film Ara</h2>
+                <button class="close-modal" onclick="closeSearchModal()">×</button>
+            </div>
+            <input type="text" class="search-input" id="movieSearchInput" placeholder="Film adı yazın...">
+            <div id="searchResults" class="search-results"></div>
+        </div>
+    </div>
+
+    <div id="logoutModal" class="logout-modal">
+        <div class="logout-modal-content">
+            <div class="logout-modal-icon">👋</div>
+            <h2>Çıkış Yap</h2>
+            <p>Çıkış yapmak istediğine emin misin?</p>
+            <div class="logout-modal-buttons">
+                <button class="modal-btn modal-btn-cancel" onclick="closeLogoutModal()">❌ İptal</button>
+                <button class="modal-btn modal-btn-confirm" onclick="confirmLogout()">✅ Çıkış Yap</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'https://localhost:7293/api';
+        const token = localStorage.getItem('token');
+        if (!token) window.location.assign('/Account/Login');
+
+        let backdrops = [];
+        let currentBackdropIndex = 0;
+
+        // 🔥 TEMA SİSTEMİ
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateThemeIcon(savedTheme);
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        }
+
+        function updateThemeIcon(theme) {
+            const icon = document.getElementById('themeIcon');
+            icon.textContent = theme === 'dark' ? '🌙' : '☀️';
+        }
+
+        initTheme();
+
+        async function loadProfile() {
+            try {
+                const response = await fetch(API_URL + '/Users/profile', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                const user = await response.json();
+
+                document.getElementById('profileUsername').textContent = user.username;
+                document.getElementById('profileEmail').textContent = user.email;
+                document.getElementById('profileDate').textContent = new Date(user.createdAt).toLocaleDateString('tr-TR');
+
+                if (user.favoriteTmdbId) {
+                    await loadFavoriteMovie(user.favoriteTmdbId);
+                } else {
+                    showNoFavorite();
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        async function loadStats() {
+            try {
+                const response = await fetch(API_URL + '/Movies/my-movies', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                const movies = await response.json();
+
+                document.getElementById('totalMovies').textContent = movies.length;
+
+                if (movies.length > 0) {
+                    const avg = movies.reduce((sum, m) => sum + (m.userRating || 0), 0) / movies.length;
+                    document.getElementById('avgRating').textContent = avg.toFixed(1);
+
+                    const thisMonth = movies.filter(m => {
+                        const watchedDate = new Date(m.watchedDate);
+                        const now = new Date();
+                        return watchedDate.getMonth() === now.getMonth() && watchedDate.getFullYear() === now.getFullYear();
+                    }).length;
+                    document.getElementById('thisMonth').textContent = thisMonth;
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        async function loadFavoriteMovie(tmdbId) {
+            try {
+                const response = await fetch(API_URL + '/Tmdb/' + tmdbId);
+                const movie = await response.json();
+
+                const posterUrl = movie.poster_Path ? 'https://image.tmdb.org/t/p/w500' + movie.poster_Path : '';
+
+                document.getElementById('favoriteMovieContent').innerHTML = `
+                    <div class="favorite-movie">
+                        <img src="${posterUrl}" class="favorite-poster" alt="${movie.title}">
+                        <div class="favorite-info">
+                            <h3>${movie.title}</h3>
+                            <p>${movie.overview || 'Açıklama yok'}</p>
+                            <button class="change-favorite-btn" onclick="openSearchModal()">🔄 Favori Filmi Değiştir</button>
+                        </div>
+                    </div>
+                `;
+
+                await loadBackdrops(tmdbId);
+            } catch (error) {
+                console.error(error);
+                showNoFavorite();
+            }
+        }
+
+        async function loadBackdrops(tmdbId) {
+            try {
+                const response = await fetch(API_URL + '/Tmdb/' + tmdbId + '/backdrops');
+                backdrops = await response.json();
+
+                if (backdrops && backdrops.length > 0) {
+                    startBackdropSlideshow();
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        function startBackdropSlideshow() {
+            const container = document.getElementById('backdrop-slideshow');
+            container.innerHTML = '';
+
+            backdrops.forEach((url, index) => {
+                const div = document.createElement('div');
+                div.className = 'backdrop-image';
+                div.style.backgroundImage = `url(${url})`;
+                if (index === 0) div.classList.add('active');
+                container.appendChild(div);
+            });
+
+            setInterval(() => {
+                const images = document.querySelectorAll('.backdrop-image');
+                if (images.length > 0) {
+                    images[currentBackdropIndex].classList.remove('active');
+                    currentBackdropIndex = (currentBackdropIndex + 1) % images.length;
+                    images[currentBackdropIndex].classList.add('active');
+                }
+            }, 5000);
+        }
+
+        function showNoFavorite() {
+            document.getElementById('favoriteMovieContent').innerHTML = `
+                <div class="no-favorite">
+                    <h3>🎬 Henüz favori film seçmedin</h3>
+                    <p>En sevdiğin filmi seç ve her giriş yaptığında arka planda sahnelerini gör!</p>
+                    <button class="change-favorite-btn" onclick="openSearchModal()">⭐ Favori Film Seç</button>
+                </div>
+            `;
+        }
+
+        function openSearchModal() {
+            document.getElementById('searchModal').classList.add('active');
+        }
+
+        function closeSearchModal() {
+            document.getElementById('searchModal').classList.remove('active');
+        }
+
+        document.getElementById('movieSearchInput').addEventListener('input', async (e) => {
+            const query = e.target.value.trim();
+            if (query.length < 2) {
+                document.getElementById('searchResults').innerHTML = '';
+                return;
+            }
+
+            try {
+                const response = await fetch(API_URL + '/Tmdb/search?query=' + encodeURIComponent(query));
+                const data = await response.json();
+
+                const resultsDiv = document.getElementById('searchResults');
+                resultsDiv.innerHTML = '';
+
+                data.results.slice(0, 12).forEach(movie => {
+                    const posterUrl = movie.poster_Path ? 'https://image.tmdb.org/t/p/w200' + movie.poster_Path : '';
+                    const div = document.createElement('div');
+                    div.className = 'search-result-item';
+                    div.onclick = () => selectFavoriteMovie(movie.id);
+                    div.innerHTML = `
+                        <img src="${posterUrl}" class="search-result-poster" alt="${movie.title}">
+                        <div class="search-result-title">${movie.title}</div>
+                    `;
+                    resultsDiv.appendChild(div);
+                });
+            } catch (error) {
+                console.error(error);
+            }
+        });
+
+        async function selectFavoriteMovie(tmdbId) {
+            try {
+                const response = await fetch(API_URL + '/Users/favorite-movie/' + tmdbId, {
+                    method: 'PUT',
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+
+                if (response.ok) {
+                    closeSearchModal();
+                    await loadFavoriteMovie(tmdbId);
+                    alert('✅ Favori film güncellendi!');
+                }
+            } catch (error) {
+                console.error(error);
+                alert('❌ Hata oluştu!');
+            }
+        }
+
+                function logout() {
+            document.getElementById('logoutModal').classList.add('active');
+        }
+
+        function closeLogoutModal() {
+            document.getElementById('logoutModal').classList.remove('active');
+        }
+
+        function confirmLogout() {
+            localStorage.removeItem('token');
+            window.location.assign('/Account/Login');
+        }
+
+        // ESC tuşu ile kapat
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeLogoutModal();
+            }
+        });
+
+        loadProfile();
+        loadStats();
+    </script>
+</body>
+
+</html>

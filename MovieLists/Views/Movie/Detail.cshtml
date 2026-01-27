@@ -1,0 +1,1033 @@
+﻿@{
+    ViewData["Title"] = "Film Detayı";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Film Detayı - MovieLists</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: rgba(0, 0, 0, 0.6);
+            --bg-card: rgba(0, 0, 0, 0.6);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.8);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --overlay-gradient: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(10, 10, 10, 1));
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #f5f5f5;
+            --bg-secondary: rgba(255, 255, 255, 0.9);
+            --bg-card: rgba(255, 255, 255, 0.95);
+            --text-primary: #1a1a1a;
+            --text-secondary: rgba(0, 0, 0, 0.7);
+            --border-color: rgba(0, 0, 0, 0.1);
+            --overlay-gradient: linear-gradient(to bottom, rgba(255, 255, 255, 0.7), rgba(245, 245, 245, 1));
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .site-header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--bg-secondary);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 15px 0;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .logo-icon {
+            font-size: 2.5em;
+        }
+
+        .logo-text h1 {
+            font-size: 2em;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0;
+        }
+
+        .logo-text p {
+            font-size: 0.85em;
+            opacity: 0.8;
+            margin: 0;
+            color: #fff;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .theme-toggle {
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border-color);
+            border-radius: 50%;
+            color: var(--text-primary);
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+            .theme-toggle:hover {
+                background: rgba(255, 255, 255, 0.2);
+                transform: scale(1.1);
+            }
+
+        .profile-btn {
+            text-decoration: none;
+            padding: 12px 25px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50px;
+            color: var(--text-primary);
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+            .profile-btn:hover {
+                background: rgba(255, 255, 255, 0.2);
+                transform: translateY(-2px);
+            }
+
+        .logout-button {
+            padding: 12px 30px;
+            background: rgba(220, 53, 69, 0.9);
+            border: none;
+            border-radius: 50px;
+            color: var(--text-primary);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+            .logout-button:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+            }
+
+        .backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60vh;
+            background-size: cover;
+            background-position: center;
+            filter: blur(3px) brightness(0.4);
+            z-index: 0;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60vh;
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(10, 10, 10, 1));
+            z-index: 1;
+        }
+
+        .container {
+            position: relative;
+            z-index: 2;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .movie-header {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 40px;
+            margin-top: 200px;
+            margin-bottom: 60px;
+        }
+
+        .poster {
+            width: 100%;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .movie-info h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .movie-meta {
+            display: flex;
+            gap: 20px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 0.9em;
+        }
+
+        .rating-badge {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: var(--text-primary);
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.2em;
+        }
+
+        .genres {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+
+        .genre-tag {
+            background: rgba(102, 126, 234, 0.2);
+            border: 1px solid rgba(102, 126, 234, 0.5);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+
+        .overview {
+            line-height: 1.8;
+            font-size: 1.1em;
+            margin: 30px 0;
+            opacity: 0.9;
+        }
+
+        .trailer-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #e52d27 0%, #b31217 100%);
+            border: none;
+            border-radius: 50px;
+            color: var(--text-primary);
+            font-weight: 700;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            margin-top: 20px;
+        }
+
+            .trailer-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 30px rgba(229, 45, 39, 0.4);
+            }
+
+        .section {
+            background: var(--bg-secondary);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .like-buttons {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .like-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 24px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+            .like-btn:hover {
+                background: rgba(255, 255, 255, 0.1);
+                transform: scale(1.05);
+            }
+
+            .like-btn.liked {
+                background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+                border-color: transparent;
+            }
+
+            .like-btn.disliked {
+                background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+                border-color: transparent;
+            }
+
+        .comment-form {
+            margin-bottom: 30px;
+        }
+
+        .comment-input {
+            width: 100%;
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            color: var(--text-primary);
+            font-size: 1em;
+            resize: vertical;
+            min-height: 100px;
+            margin-bottom: 15px;
+        }
+
+            .comment-input:focus {
+                outline: none;
+                border-color: rgba(102, 126, 234, 0.5);
+                background: rgba(255, 255, 255, 0.15);
+            }
+
+        .submit-btn {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 50px;
+            color: var(--text-primary);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+            .submit-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+            }
+
+        .comments-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .comment {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            padding: 20px;
+        }
+
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .comment-author {
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .comment-date {
+            font-size: 0.85em;
+            opacity: 0.6;
+        }
+
+        .comment-content {
+            line-height: 1.6;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+
+        .comment-likes {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .comment-like-btn {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 6px 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            color: var(--text-primary);
+            font-size: 0.85em;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+            .comment-like-btn:hover {
+                background: rgba(255, 255, 255, 0.1);
+            }
+
+            .comment-like-btn.liked {
+                background: rgba(102, 234, 102, 0.2);
+                border-color: rgba(102, 234, 102, 0.5);
+            }
+
+            .comment-like-btn.disliked {
+                background: rgba(234, 102, 102, 0.2);
+                border-color: rgba(234, 102, 102, 0.5);
+            }
+
+        .comment-actions {
+            margin-top: 10px;
+        }
+
+        .comment-action-btn {
+            padding: 6px 16px;
+            background: rgba(220, 53, 69, 0.2);
+            border: 1px solid rgba(220, 53, 69, 0.5);
+            border-radius: 20px;
+            color: var(--text-primary);
+            font-size: 0.85em;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+            .comment-action-btn:hover {
+                background: rgba(220, 53, 69, 0.4);
+            }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            opacity: 0.6;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 1.2em;
+        }
+
+        /* Delete Comment Modal */
+        .delete-comment-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+        }
+
+            .delete-comment-modal.active {
+                display: flex;
+            }
+
+        .delete-comment-modal-content {
+            background: linear-gradient(135deg, rgba(220, 53, 69, 0.95) 0%, rgba(185, 28, 28, 0.95) 100%);
+            border-radius: 25px;
+            padding: 50px;
+            max-width: 450px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        .delete-comment-modal-icon {
+            font-size: 5em;
+            margin-bottom: 20px;
+        }
+
+        .delete-comment-modal h2 {
+            font-size: 2em;
+            margin-bottom: 15px;
+            color: white;
+        }
+
+        .delete-comment-modal p {
+            font-size: 1.2em;
+            margin-bottom: 35px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .delete-comment-modal-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .modal-btn {
+            padding: 15px 40px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .modal-btn-confirm {
+            background: rgba(220, 53, 69, 0.9);
+            color: white;
+        }
+
+            .modal-btn-confirm:hover {
+                background: rgba(220, 53, 69, 1);
+                transform: translateY(-2px);
+            }
+
+        .modal-btn-cancel {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+            .modal-btn-cancel:hover {
+                background: rgba(255, 255, 255, 0.3);
+                transform: translateY(-2px);
+            }
+
+        @@keyframes modalSlideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            top: 100px;
+            right: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            z-index: 10001;
+            animation: slideIn 0.3s ease-out;
+            min-width: 300px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+            .toast.error {
+                background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+            }
+
+            .toast.success {
+                background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            }
+
+            .toast.warning {
+                background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            }
+
+        @@keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @@keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+
+            to {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+        }
+
+        .toast.hiding {
+            animation: slideOut 0.3s ease-in forwards;
+        }
+
+        @@media (max-width: 768px) {
+            .movie-header {
+                grid-template-columns: 1fr;
+                margin-top: 100px;
+            }
+
+            .movie-info h1 {
+                font-size: 2em;
+            }
+
+            .like-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <div class="header-content">
+            <div class="logo-section" onclick="window.location.href='/Home/Index'">
+                <div class="logo-icon">🎬</div>
+                <div class="logo-text">
+                    <h1>MovieLists</h1>
+                    <p>Film Kütüphanem</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="theme-toggle" onclick="toggleTheme()" title="Tema Değiştir">
+                    <span id="themeIcon">🌙</span>
+                </button>
+                <a href="/Account/Profile" class="profile-btn">👤 Profil</a>
+                <button class="logout-button" onclick="logout()">🚪 Çıkış</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="backdrop" id="backdrop"></div>
+    <div class="overlay"></div>
+
+    <div class="container">
+        <div id="movieContent"></div>
+
+        <div class="section">
+            <h2 class="section-title">💭 Bu Filmi Beğendin mi?</h2>
+            <div class="like-buttons">
+                <button class="like-btn" id="likeBtn" onclick="toggleLike(true)">
+                    👍 Beğendim <span id="likeCount">0</span>
+                </button>
+                <button class="like-btn" id="dislikeBtn" onclick="toggleLike(false)">
+                    👎 Beğenmedim <span id="dislikeCount">0</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">💬 Yorumlar</h2>
+            <div class="comment-form">
+                <textarea id="commentInput" class="comment-input" placeholder="Yorumunu yaz..."></textarea>
+                <button class="submit-btn" onclick="submitComment()">📝 Yorum Yap</button>
+            </div>
+            <div id="commentsList" class="comments-list">
+                <div class="loading">Yorumlar yükleniyor...</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="deleteCommentModal" class="delete-comment-modal">
+        <div class="delete-comment-modal-content">
+            <div class="delete-comment-modal-icon">🗑️</div>
+            <h2>Yorumu Sil</h2>
+            <p>Bu yorumu silmek istediğine emin misin?</p>
+            <div class="delete-comment-modal-buttons">
+                <button class="modal-btn modal-btn-cancel" onclick="closeDeleteCommentModal()">❌ İptal</button>
+                <button class="modal-btn modal-btn-confirm" onclick="confirmDeleteComment()">✅ Sil</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'https://localhost:7293/api';
+        const token = localStorage.getItem('token');
+
+        function showToast(message, type = 'success') {
+            document.querySelectorAll('.toast').forEach(t => t.remove());
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : '⚠️';
+            toast.innerHTML = `<span style="font-size: 24px;">${icon}</span><span>${message}</span>`;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.add('hiding');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateThemeIcon(savedTheme);
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        }
+
+        function updateThemeIcon(theme) {
+            document.getElementById('themeIcon').textContent = theme === 'dark' ? '🌙' : '☀️';
+        }
+
+        initTheme();
+
+        let currentMovieId = null;
+        let currentUserId = null;
+        let commentToDelete = null;
+
+        if (!token) window.location.assign('/Account/Login');
+
+        let tmdbId = null;
+        const urlParams = new URLSearchParams(window.location.search);
+        tmdbId = urlParams.get('tmdbId');
+
+        if (!tmdbId) {
+            const pathParts = window.location.pathname.split('/');
+            tmdbId = pathParts[pathParts.length - 1];
+        }
+
+        if (!tmdbId || tmdbId === 'Detail') {
+            showToast('Film bulunamadı!', 'error');
+            setTimeout(() => window.location.href = '/Home/Index', 1500);
+        }
+
+        function parseJwt(token) {
+            try {
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
+                    '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+                return JSON.parse(jsonPayload);
+            } catch (e) { return null; }
+        }
+
+        const userData = parseJwt(token);
+        if (userData) {
+            currentUserId = parseInt(userData.sub || userData.nameid);
+        }
+
+        function logout() {
+            if (confirm('Çıkış yapmak istediğine emin misin?')) {
+                localStorage.removeItem('token');
+                window.location.assign('/Account/Login');
+            }
+        }
+
+        async function loadMovieDetails() {
+            try {
+                const response = await fetch(`${API_URL}/Tmdb/${tmdbId}`);
+                const movie = await response.json();
+
+                if (movie.backdrop_Path) {
+                    document.getElementById('backdrop').style.backgroundImage =
+                        `url(https://image.tmdb.org/t/p/original${movie.backdrop_Path})`;
+                }
+
+                const genres = movie.genres ? movie.genres.map(g =>
+                    `<span class="genre-tag">${g.name}</span>`).join('') : '';
+
+                let trailer = null;
+                if (movie.videos && movie.videos.results && movie.videos.results.length > 0) {
+                    trailer = movie.videos.results.find(v => v.type === 'Trailer' && v.site === 'YouTube');
+                    if (!trailer) trailer = movie.videos.results.find(v => v.site === 'YouTube');
+                }
+
+                const trailerBtn = trailer ?
+                    `<a href="https://www.youtube.com/watch?v=${trailer.key}" target="_blank" class="trailer-btn">▶️ Fragmanı İzle</a>` :
+                    '<p style="margin-top: 20px; opacity: 0.6;">😕 Bu film için fragman bulunamadı.</p>';
+
+                document.getElementById('movieContent').innerHTML = `
+                    <div class="movie-header">
+                        <div class="poster-container">
+                            <img src="https://image.tmdb.org/t/p/w500${movie.poster_Path}" alt="${movie.title}" class="poster">
+                        </div>
+                        <div class="movie-info">
+                            <h1>${movie.title}</h1>
+                            ${movie.tagline ? `<p style="font-style: italic; opacity: 0.8; font-size: 1.2em; margin-bottom: 20px;">"${movie.tagline}"</p>` : ''}
+                            <div class="movie-meta">
+                                <span class="rating-badge">⭐ ${movie.vote_Average?.toFixed(1) || 'N/A'}</span>
+                                <span class="meta-item">📅 ${movie.release_Date?.split('-')[0] || 'N/A'}</span>
+                                <span class="meta-item">⏱️ ${movie.runtime || 'N/A'} dk</span>
+                            </div>
+                            <div class="genres">${genres}</div>
+                            <div class="overview">${movie.overview || 'Özet bulunamadı.'}</div>
+                            ${trailerBtn}
+                        </div>
+                    </div>
+                `;
+
+                currentMovieId = tmdbId;
+                loadLikeStats();
+                loadComments();
+            } catch (error) {
+                console.error('Film detayları yüklenemedi:', error);
+                showToast('Film detayları yüklenirken hata oluştu!', 'error');
+            }
+        }
+
+        async function loadLikeStats() {
+            try {
+                const response = await fetch(`${API_URL}/MovieLikes/movie/${currentMovieId}/stats`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const stats = await response.json();
+
+                document.getElementById('likeCount').textContent = stats.totalLikes;
+                document.getElementById('dislikeCount').textContent = stats.totalDislikes;
+
+                const likeBtn = document.getElementById('likeBtn');
+                const dislikeBtn = document.getElementById('dislikeBtn');
+
+                likeBtn.classList.remove('liked');
+                dislikeBtn.classList.remove('disliked');
+
+                if (stats.userLiked === true) likeBtn.classList.add('liked');
+                else if (stats.userLiked === false) dislikeBtn.classList.add('disliked');
+            } catch (error) {
+                console.error('Like istatistikleri yüklenemedi:', error);
+            }
+        }
+
+        async function toggleLike(isLiked) {
+            try {
+                const response = await fetch(`${API_URL}/MovieLikes`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        movieId: parseInt(currentMovieId),
+                        isLiked: isLiked
+                    })
+                });
+
+                if (response.ok) loadLikeStats();
+                else showToast('Beğeni kaydedilemedi!', 'error');
+            } catch (error) {
+                console.error('Beğeni hatası:', error);
+                showToast('Bir hata oluştu!', 'error');
+            }
+        }
+
+        async function loadComments() {
+            try {
+                const response = await fetch(`${API_URL}/Comments/movie/${currentMovieId}`);
+                const comments = await response.json();
+
+                const commentsList = document.getElementById('commentsList');
+
+                if (comments.length === 0) {
+                    commentsList.innerHTML = '<div class="empty-state">Henüz yorum yapılmamış. İlk yorumu sen yap! 💬</div>';
+                    return;
+                }
+
+                for (let comment of comments) {
+                    try {
+                        const likeResponse = await fetch(`${API_URL}/CommentLikes/comment/${comment.id}/stats`, {
+                            headers: { 'Authorization': `Bearer ${token}` }
+                        });
+                        comment.likeStats = await likeResponse.json();
+                    } catch (err) {
+                        comment.likeStats = { totalLikes: 0, totalDislikes: 0, userLiked: null };
+                    }
+                }
+
+                commentsList.innerHTML = comments.map(comment => `
+                    <div class="comment">
+                        <div class="comment-header">
+                            <span class="comment-author">👤 ${comment.username}</span>
+                            <span class="comment-date">${formatDate(comment.createdAt)}</span>
+                        </div>
+                        <div class="comment-content">${comment.content}</div>
+                        <div class="comment-likes">
+                            <button class="comment-like-btn ${comment.likeStats.userLiked === true ? 'liked' : ''}"
+                                    onclick="toggleCommentLike(${comment.id}, true)">
+                                👍 ${comment.likeStats.totalLikes}
+                            </button>
+                            <button class="comment-like-btn ${comment.likeStats.userLiked === false ? 'disliked' : ''}"
+                                    onclick="toggleCommentLike(${comment.id}, false)">
+                                👎 ${comment.likeStats.totalDislikes}
+                            </button>
+                        </div>
+                        ${comment.userId === currentUserId ? `
+                            <div class="comment-actions">
+                                <button class="comment-action-btn" onclick="deleteComment(${comment.id})">🗑️ Sil</button>
+                            </div>
+                        ` : ''}
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Yorumlar yüklenemedi:', error);
+            }
+        }
+
+        async function toggleCommentLike(commentId, isLike) {
+            try {
+                const response = await fetch(`${API_URL}/CommentLikes`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ commentId, isLike })
+                });
+
+                if (response.ok) loadComments();
+                else showToast('Beğeni kaydedilemedi!', 'error');
+            } catch (error) {
+                console.error('Beğeni hatası:', error);
+                showToast('Bir hata oluştu!', 'error');
+            }
+        }
+
+        async function submitComment() {
+            const content = document.getElementById('commentInput').value.trim();
+
+            if (!content) {
+                showToast('Lütfen bir yorum yazın!', 'warning');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/Comments`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        movieId: parseInt(currentMovieId),
+                        content: content
+                    })
+                });
+
+                if (response.ok) {
+                    document.getElementById('commentInput').value = '';
+                    showToast('Yorum eklendi!', 'success');
+                    loadComments();
+                } else {
+                    const errorText = await response.text();
+                    showToast(errorText || 'Yorum gönderilemedi!', 'error');
+                }
+            } catch (error) {
+                console.error('Yorum hatası:', error);
+                showToast('Bağlantı hatası!', 'error');
+            }
+        }
+
+        function deleteComment(commentId) {
+            commentToDelete = commentId;
+            document.getElementById('deleteCommentModal').classList.add('active');
+        }
+
+        function closeDeleteCommentModal() {
+            document.getElementById('deleteCommentModal').classList.remove('active');
+            commentToDelete = null;
+        }
+
+        async function confirmDeleteComment() {
+            if (!commentToDelete) return;
+
+            try {
+                const response = await fetch(`${API_URL}/Comments/${commentToDelete}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    closeDeleteCommentModal();
+                    showToast('Yorum silindi!', 'success');
+                    loadComments();
+                } else {
+                    showToast('Yorum silinemedi!', 'error');
+                }
+            } catch (error) {
+                console.error('Silme hatası:', error);
+                showToast('Bir hata oluştu!', 'error');
+            }
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString + 'Z');
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMs / 3600000);
+            const diffDays = Math.floor(diffMs / 86400000);
+
+            if (diffMins < 1) return 'Az önce';
+            if (diffMins < 60) return `${diffMins} dakika önce`;
+            if (diffHours < 24) return `${diffHours} saat önce`;
+            if (diffDays < 7) return `${diffDays} gün önce`;
+            return date.toLocaleDateString('tr-TR');
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeDeleteCommentModal();
+        });
+
+        loadMovieDetails();
+    </script>
+</body>
+</html>
