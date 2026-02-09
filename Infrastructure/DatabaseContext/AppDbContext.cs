@@ -20,6 +20,7 @@ namespace Infrastructure.DatabaseContext
         {
             base.OnModelCreating(modelBuilder);
 
+            // User
             modelBuilder.Entity<User>(entity =>
             {
                 entity.HasKey(e => e.Id);
@@ -30,6 +31,7 @@ namespace Infrastructure.DatabaseContext
                 entity.HasIndex(e => e.Username).IsUnique();
             });
 
+            // Movie
             modelBuilder.Entity<Movie>(entity =>
             {
                 entity.HasKey(e => e.Id);
@@ -41,58 +43,70 @@ namespace Infrastructure.DatabaseContext
                       .OnDelete(DeleteBehavior.Cascade);
             });
 
+            // Comment
             modelBuilder.Entity<Comment>(entity =>
             {
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.Content).IsRequired().HasMaxLength(1000);
                 entity.Property(e => e.CreatedAt).IsRequired();
-
                 entity.HasOne(e => e.Movie)
                       .WithMany(m => m.Comments)
                       .HasForeignKey(e => e.MovieId)
                       .OnDelete(DeleteBehavior.Cascade);
-
                 entity.HasOne(e => e.User)
                       .WithMany(u => u.Comments)
                       .HasForeignKey(e => e.UserId)
-                      .OnDelete(DeleteBehavior.NoAction);
+                      .OnDelete(DeleteBehavior.NoAction); 
             });
 
+            // MovieLike
             modelBuilder.Entity<MovieLike>(entity =>
             {
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.CreatedAt).IsRequired();
-
                 entity.HasOne(e => e.Movie)
                       .WithMany(m => m.Likes)
                       .HasForeignKey(e => e.MovieId)
                       .OnDelete(DeleteBehavior.Cascade);
-
                 entity.HasOne(e => e.User)
                       .WithMany(u => u.Likes)
                       .HasForeignKey(e => e.UserId)
                       .OnDelete(DeleteBehavior.NoAction);
-
                 entity.HasIndex(e => new { e.UserId, e.MovieId }).IsUnique();
             });
 
+            // WatchLater
             modelBuilder.Entity<WatchLater>(entity =>
             {
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.Title).IsRequired().HasMaxLength(200);
                 entity.Property(e => e.TmdbId).IsRequired();
-
                 entity.HasOne(e => e.User)
                       .WithMany(u => u.WatchLaterMovies)
                       .HasForeignKey(e => e.UserId)
                       .OnDelete(DeleteBehavior.Cascade);
-
                 entity.HasIndex(e => new { e.UserId, e.TmdbId }).IsUnique();
             });
 
-            modelBuilder.Entity<CommentLike>()
-            .HasIndex(cl => new { cl.CommentId, cl.UserId })
-            .IsUnique();
+            // CommentLike 
+            modelBuilder.Entity<CommentLike>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.IsLike).IsRequired();
+                entity.Property(e => e.CreatedAt).IsRequired();
+
+                entity.HasOne(e => e.Comment)
+                      .WithMany(c => c.CommentLikes)
+                      .HasForeignKey(e => e.CommentId)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(e => e.User)
+                      .WithMany()
+                      .HasForeignKey(e => e.UserId)
+                      .OnDelete(DeleteBehavior.NoAction);
+
+                entity.HasIndex(e => new { e.CommentId, e.UserId }).IsUnique();
+            });
         }
     }
 }
