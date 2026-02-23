@@ -2,6 +2,7 @@
 using Core.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 
 namespace MovieLists.Controllers
 {
@@ -35,8 +36,8 @@ namespace MovieLists.Controllers
         {
             try
             {
-                var token = await _authService.LoginAsync(loginDto.Email, loginDto.Password);
-                return Ok(new { token, message = "Giriş başarılı!" });
+                var result = await _authService.LoginAsync(loginDto.Email, loginDto.Password);
+                return Ok(new { token = result.Token, username = result.Username, email = result.Email, message = "Giriş başarılı!" });
             }
             catch (Exception ex)
             {

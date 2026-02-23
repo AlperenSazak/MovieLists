@@ -51,25 +51,22 @@ namespace Infrastructure.Services
             return GenerateJwtToken(user.Id, user.Email, user.Username);
         }
 
-        public async Task<string> LoginAsync(string email, string password)
+        public async Task<(string Token, string Username, string Email)> LoginAsync(string email, string password)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            var user = await _context.Users.FirstOrDefaultAsync(
+                u => u.Email == email || u.Username == email
+            );
 
-            if (user == null)
-            {
-                throw new Exception("Email veya şifre hatalı!");
-            }
+            if (user == null) throw new Exception("Email veya şifre hatalı!");
 
             var passwordHash = Convert.ToBase64String(Encoding.UTF8.GetBytes(password));
-            if (user.PasswordHash != passwordHash)
-            {
-                throw new Exception("Email veya şifre hatalı!");
-            }
+            if (user.PasswordHash != passwordHash) throw new Exception("Email veya şifre hatalı!");
 
             user.LastLoginAt = DateTime.UtcNow;
             await _context.SaveChangesAsync();
 
-            return GenerateJwtToken(user.Id, user.Email, user.Username);
+            var token = GenerateJwtToken(user.Id, user.Email, user.Username);
+            return (token, user.Username, user.Email);
         }
 
         public string GenerateJwtToken(int userId, string email, string username)

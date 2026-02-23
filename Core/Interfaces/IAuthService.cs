@@ -10,7 +10,7 @@ namespace Core.Interfaces
     public interface IAuthService
     {
         Task<string> RegisterAsync(CreateUserDto userDto);
-        Task<string> LoginAsync(string email, string password);
+        Task<(string Token, string Username, string Email)> LoginAsync(string email, string password);
         string GenerateJwtToken(int userId, string email, string username);
     }
 }
