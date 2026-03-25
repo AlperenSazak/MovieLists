@@ -59,7 +59,8 @@ namespace Core.Mappings
                 Email = user.Email,
                 CreatedAt = user.CreatedAt,
                 LastLoginAt = user.LastLoginAt,
-                FavoriteTmdbId = user.FavoriteTmdbId
+                FavoriteTmdbId = user.FavoriteTmdbId,
+                ProfilePhoto = user.ProfilePhoto  
             };
         }
     }

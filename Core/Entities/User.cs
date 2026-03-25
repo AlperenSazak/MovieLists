@@ -15,6 +15,7 @@ namespace Core.Entities
         public DateTime CreatedAt { get; set; }
         public DateTime? LastLoginAt { get; set; }
         public int? FavoriteTmdbId { get; set; }
+        public string? ProfilePhoto { get; set; }
 
         // Navigation Property
         public ICollection<Movie> Movies { get; set; } = new List<Movie>();

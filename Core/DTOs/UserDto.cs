@@ -14,5 +14,6 @@ namespace Core.DTOs
         public DateTime CreatedAt { get; set; }
         public DateTime? LastLoginAt { get; set; }
         public int? FavoriteTmdbId { get; set; }
+        public string? ProfilePhoto { get; set; }
     }
 }

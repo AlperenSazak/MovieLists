@@ -87,5 +87,17 @@ namespace MovieLists.Controllers
 
             return user.ToDto();
         }
+
+        [HttpPut("profile-photo")]
+        public async Task<IActionResult> UpdateProfilePhoto([FromBody] UpdateProfilePhotoDto dto)
+        {
+            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value);
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null) return NotFound();
+
+            user.ProfilePhoto = dto.ProfilePhoto;
+            await _context.SaveChangesAsync();
+            return Ok(new { message = "Profil fotoğrafı güncellendi!" });
+        }
     }
 }
